@@ -1,10 +1,19 @@
 // screens/about.tsx
-import React from 'react';
-import { View, Text } from 'react-native';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native"; 
+import { globalStyles } from "../utils/const";
+
+const styles = StyleSheet.create({
+    about: {
+        fontSize: 20
+    }
+})
 
 const About = () => (
   <View>
-    <Text>About Screen</Text>
+    <Text style={[styles.about, globalStyles.globalFont]}>
+      About Screen
+    </Text>
   </View>
 );
 

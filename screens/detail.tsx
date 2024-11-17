@@ -1,10 +1,12 @@
 // screens/detail.tsx
-import React from 'react';
-import { View, Text } from 'react-native';
+import React from "react";
+import { View, Text } from "react-native";
 
 const Detail = () => (
   <View>
-    <Text>Detail Screen</Text>
+    <Text style={{ fontFamily: "OpenSans-Regular", fontSize: 20 }}>
+      Detail Screen
+    </Text>
   </View>
 );
 

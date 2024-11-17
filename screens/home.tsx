@@ -1,10 +1,12 @@
 // screens/home.tsx
-import React from 'react';
-import { View, Text } from 'react-native';
+import React from "react";
+import { View, Text } from "react-native";
 
 const Home = () => (
   <View>
-    <Text>Home Screen</Text>
+    <Text style={{ fontFamily: "OpenSans-Regular", fontSize: 20 }}>
+      Home Screen
+    </Text>
   </View>
 );
 
