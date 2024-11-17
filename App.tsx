@@ -1,13 +1,39 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
-export default function App() { 
-  const [count, setCount] = useState<number>(0);
+export default function App() {
+  const [name, setName] = useState<string>("");
+  const [age, setAge] = useState<number>(0);
   return (
     <View style={styles.container}>
-        <Text style = {styles.text}> {count}</Text>
-        <Button title="Increse" onPress={() => setCount(count + 1)}></Button>
+      <View>
+        <Text style={styles.text}>Age: {age}</Text>
+        <TextInput
+          multiline
+          onChangeText={(value) => setAge(Number(value))}
+          style={{
+            borderColor: "green",
+            borderWidth: 1,
+            width: 200,
+            padding: 15,
+          }}
+          keyboardType="numeric"
+        />
+      </View>
+      <View>
+        <Text style={styles.text}>Name: {name}</Text>
+        <TextInput
+          multiline
+          onChangeText={(value) => setName(value)}
+          style={{
+            borderColor: "green",
+            borderWidth: 1,
+            width: 200,
+            padding: 15,
+          }}
+        />
+      </View>
     </View>
   );
 }
