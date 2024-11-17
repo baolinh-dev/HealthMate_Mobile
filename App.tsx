@@ -1,64 +1,144 @@
-import React from "react";
-import { FlatList, Text, View, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { FlatList, Text, TextInput, View, Button, StyleSheet, TouchableOpacity, Keyboard } from "react-native";
 
-// Định nghĩa kiểu cho mỗi phần tử trong danh sách
-interface Student {
+// Định nghĩa kiểu cho mỗi phần tử Todo
+interface Todo {
   id: string;
   name: string;
-  age: number;
 }
 
 export default function App() {
-  const students: Student[] = [
-    { id: "1", name: "Bao Linh", age: 19 },
-    { id: "2", name: "Minh Tu", age: 21 },
-    { id: "3", name: "Nguyen Hoang", age: 20 },
-    { id: "4", name: "Lan Anh", age: 22 },
-    { id: "5", name: "Tuan Anh", age: 18 },
-    { id: "6", name: "Mai Lan", age: 23 },
-    { id: "7", name: "Thao Ly", age: 20 },
-    { id: "8", name: "Duy Anh", age: 22 },
-    { id: "9", name: "Hieu Hoang", age: 19 },
-    { id: "10", name: "Khanh Linh", age: 21 },
-  ];
+  // State lưu trữ danh sách todo
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [newTodo, setNewTodo] = useState<string>("");
+  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
 
-  // Hàm renderItem, chỉ định kiểu dữ liệu cho 'item'
-  const renderItem = ({ item }: { item: Student }) => (
+  // Hàm xử lý khi nhấn nút thêm Todo
+  const addTodo = () => {
+    if (newTodo.trim()) {
+      const newTodoItem = {
+        id: String(todos.length + 1),
+        name: newTodo.trim(),
+      };
+      setTodos((prevTodos) => [...prevTodos, newTodoItem]);
+      setNewTodo(""); // Làm trống trường TextInput
+      Keyboard.dismiss(); // Tắt bàn phím
+    }
+  };
+
+  // Hàm sửa Todo
+  const editTodo = (id: string) => {
+    const todoToEdit = todos.find((todo) => todo.id === id);
+    if (todoToEdit) {
+      setEditingTodo(todoToEdit);
+      setNewTodo(todoToEdit.name); // Đặt lại tên Todo vào ô nhập liệu
+    }
+  };
+
+  // Hàm lưu Todo đã chỉnh sửa
+  const saveEdit = () => {
+    if (editingTodo && newTodo.trim()) {
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo.id === editingTodo.id ? { ...todo, name: newTodo.trim() } : todo
+        )
+      );
+      setNewTodo(""); // Làm trống TextInput sau khi lưu
+      setEditingTodo(null); // Đặt lại editingTodo là null
+      Keyboard.dismiss(); // Tắt bàn phím
+    }
+  };
+
+  // Hàm xóa Todo
+  const deleteTodo = (id: string) => {
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+  };
+
+  // Hàm renderItem cho FlatList
+  const renderItem = ({ item }: { item: Todo }) => (
     <View style={styles.item}>
       <Text style={styles.text}>ID: {item.id}</Text>
       <Text style={styles.text}>Name: {item.name}</Text>
-      <Text style={styles.text}>Age: {item.age}</Text>
+      <TouchableOpacity style={styles.button} onPress={() => editTodo(item.id)}>
+        <Text style={styles.buttonText}>Edit</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => deleteTodo(item.id)}>
+        <Text style={styles.buttonText}>Delete</Text>
+      </TouchableOpacity>
     </View>
   );
 
   return (
-    <View style = {styles.parentContainer}>
+    <View style={styles.container}>
+      <Text style={styles.header}>Todo List</Text>
+
+      {/* start: Form để nhập todo */}
+      <View style={styles.form}>
+        <TextInput
+          style={styles.input}
+          value={newTodo}
+          onChangeText={(text) => setNewTodo(text)}
+          placeholder="Enter Todo"
+        />
+        {editingTodo ? (
+          <Button title="Save Edit" onPress={saveEdit} />
+        ) : (
+          <Button title="Add Todo" onPress={addTodo} />
+        )}
+      </View>
+      {/* end: Form */}
+
+      {/* start: List todo */}
       <FlatList
-        style={styles.container} 
-        data={students} // Dữ liệu
-        renderItem={renderItem} // Cách render mỗi item
-        keyExtractor={(item) => item.id} // Cung cấp key cho mỗi item
+        data={todos}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
       />
+      {/* end: List todo */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    backgroundColor: "orange",
+    paddingHorizontal: 20,
+    textAlign: "center",
+    fontSize: 40,
+    paddingVertical: 10,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    paddingTop: 50,
+    paddingHorizontal: 20,
+  },
+  form: {
+    marginBottom: 20,
+  },
+  input: {
+    borderColor: "green",
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 10,
+    fontSize: 18,
+  },
   item: {
     padding: 20,
     backgroundColor: "lightgreen",
     marginBottom: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: 18,
     color: "black",
-  }, 
-  parentContainer: {
-    paddingHorizontal: 20, 
-    backgroundColor: "white", 
-    paddingTop: 80
   },
-  container: {
-    backgroundColor: "white",
+  button: {
+    backgroundColor: "orange",
+    padding: 10,
+    marginTop: 5,
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
   },
 });
