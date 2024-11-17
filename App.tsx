@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FlatList, Text, TextInput, View, Button, StyleSheet, TouchableOpacity, Keyboard } from "react-native";
+import { FlatList, Text, TextInput, View, Button, StyleSheet, TouchableOpacity, Keyboard, Alert, TouchableWithoutFeedback } from "react-native";
 
 // Định nghĩa kiểu cho mỗi phần tử Todo
 interface Todo {
@@ -14,7 +14,11 @@ export default function App() {
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
 
   // Hàm xử lý khi nhấn nút thêm Todo
-  const addTodo = () => {
+  const addTodo = () => { 
+    if (newTodo.trim() === "") {
+      Alert.alert("Lỗi", "Vui lòng nhập tên công việc!");
+      return;
+    }
     if (newTodo.trim()) {
       const newTodoItem = {
         id: String(todos.length + 1),
@@ -69,7 +73,8 @@ export default function App() {
   );
 
   return (
-    <View style={styles.container}>
+    <TouchableWithoutFeedback onPress={ () => Keyboard.dismiss()}>
+      <View style={styles.container}>
       <Text style={styles.header}>Todo List</Text>
 
       {/* start: Form để nhập todo */}
@@ -96,6 +101,7 @@ export default function App() {
       />
       {/* end: List todo */}
     </View>
+    </TouchableWithoutFeedback>
   );
 }
 
