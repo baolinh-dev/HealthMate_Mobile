@@ -1,13 +1,28 @@
-// screens/home.tsx
-import React from "react";
-import { View, Text } from "react-native";
+import React from 'react';
+import { View, Text, Button } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../utils/types';
 
-const Home = () => (
-  <View>
-    <Text style={{ fontFamily: "OpenSans-Regular", fontSize: 20 }}>
-      Home Screen
-    </Text>
-  </View>
-);
 
-export default Home;
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+
+const HomeScreen = () => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Welcome to Home Screen</Text>
+      <Button 
+        title="Go to Detail" 
+        onPress={() => navigation.navigate('Detail')} 
+      />
+      <Button 
+        title="Go to About" 
+        onPress={() => navigation.navigate('About')} 
+      />
+    </View>
+  );
+};
+
+export default HomeScreen;
