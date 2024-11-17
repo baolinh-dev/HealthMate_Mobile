@@ -1,33 +1,55 @@
 // App.tsx
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './screens/home';
-import DetailScreen from './screens/detail';
-import AboutScreen from './screens/about';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeScreen from './screens/HomeScreen';
+import DetailScreen from './screens/DetailScreen';
+import AboutScreen from './screens/AboutScreen';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons'; // Import Expo Icons 
+import AntDesign from '@expo/vector-icons/AntDesign';
 
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
-export default function App() {
+const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen 
-          name="Home" 
-          component={HomeScreen} 
-          options={{ title: 'Home' }} 
+      <Tab.Navigator initialRouteName="Home">
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialIcons name="home" size={size} color={color} />
+            ),
+          }}
         />
-        <Stack.Screen 
-          name="Detail" 
-          component={DetailScreen} 
-          options={{ title: 'Detail Page' }} 
+        <Tab.Screen
+          name="Detail"
+          component={DetailScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="information-circle" size={size} color={color} />
+            ),
+          }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              e.preventDefault(); // Ngừng hành động mặc định khi chọn tab
+              navigation.navigate('Detail', { id: 1, name: 'Item 1' }); // Truyền tham số
+            },
+          })}
         />
-        <Stack.Screen 
-          name="About" 
-          component={AboutScreen} 
-          options={{ title: 'About Us' }} 
+        <Tab.Screen
+          name="About"
+          component={AboutScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <AntDesign name="question" size={24} color="black" />
+            ),
+          }}
         />
-      </Stack.Navigator>
+      </Tab.Navigator>
     </NavigationContainer>
   );
-}
+};
+
+export default App;

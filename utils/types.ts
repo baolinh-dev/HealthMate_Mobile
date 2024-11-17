@@ -1,9 +1,11 @@
+// react-native.d.ts
+declare module "*.jpg" 
+
 // navigation/types.ts
-export type RootStackParamList = {
+export type RootTabParamList = {
   Home: undefined;
-  Detail: { id: number; name: string };
+  Detail: undefined;
   About: undefined;
-}; 
+};
 
 
-  
