@@ -1,13 +1,21 @@
-// screens/detail.tsx
-import React from "react";
-import { View, Text } from "react-native";
+// screens/DetailScreen.tsx
+import React from 'react';
+import { View, Text } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../utils/types';
 
-const Detail = () => (
-  <View>
-    <Text style={{ fontFamily: "OpenSans-Regular", fontSize: 20 }}>
-      Detail Screen
-    </Text>
-  </View>
-);
+type DetailScreenRouteProp = RouteProp<RootStackParamList, 'Detail'>;
 
-export default Detail;
+const DetailScreen = ({ route }: { route: DetailScreenRouteProp }) => {
+  const { id, name } = route.params;
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Detail Screen</Text>
+      <Text>ID: {id}</Text>
+      <Text>Name: {name}</Text>
+    </View>
+  );
+};
+
+export default DetailScreen;
