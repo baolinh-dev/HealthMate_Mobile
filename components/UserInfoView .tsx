@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     marginBottom: 15, 
-    marginTop: 20, 
   },
   leftContainer: {
     flexDirection: "row",
