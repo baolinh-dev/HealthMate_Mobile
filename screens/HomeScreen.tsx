@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../types/navigation"; // Đường dẫn đến nơi bạn định nghĩa RootStackParamList
-import UserInfoView from "../components/UserInfoView "; 
+import UserInfoView from "../components/UserInfoView"; 
 import Avatar from '../assets/avatar.png'; 
 import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "../constants/colors";
