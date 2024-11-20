@@ -11,7 +11,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../types/navigation"; // Import RootStackParamList 
-import ImageTest from '../assets/logo.png'; 
+import Logo from '../assets/logo.png'; 
 import colors from '../constants/colors';
 
 type LoginScreenProps = StackScreenProps<RootStackParamList, "Login">; // Define props type
@@ -46,7 +46,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={ImageTest} style={styles.logo} /> 
+      <Image source={Logo} style={styles.logo} /> 
       <Text style={styles.healthmateText}>Log in with your HealthMate account</Text>
       <TextInput
         style={styles.input}

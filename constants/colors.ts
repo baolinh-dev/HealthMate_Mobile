@@ -4,7 +4,8 @@ const colors = {
   text: "#333", // Dark gray for text 
   link: "#1E90FF", 
   white: "#ffffff", 
-  border: "#cccccc"
+  border: "#cccccc",
+  backGround: "#F9F9F9"
 };
 
 export default colors;

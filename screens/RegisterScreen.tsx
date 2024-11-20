@@ -3,7 +3,7 @@ import { View, TextInput, Alert, StyleSheet, TouchableOpacity, Text, Image } fro
 import { useNavigation } from '@react-navigation/native'; 
 import { StackNavigationProp } from '@react-navigation/stack'; 
 import { RootStackParamList } from '../types/navigation'; // Import RootStackParamList
-import ImageTest from '../assets/logo.png'; // Adjust the path as needed
+import Logo from '../assets/logo.png'; 
 import colors from '../constants/colors';
 
 type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Register'>; // Define navigation type
@@ -43,7 +43,7 @@ const RegisterScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={ImageTest} style={styles.logo} />   
+      <Image source={Logo} style={styles.logo} />   
       <Text style={styles.healthmateText}>Register for a Healthmate account</Text>
       <TextInput
         style={styles.input}

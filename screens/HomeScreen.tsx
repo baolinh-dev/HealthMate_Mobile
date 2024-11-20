@@ -1,16 +1,26 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamList } from '../types/navigation'; // Đường dẫn đến nơi bạn định nghĩa RootStackParamList
+import React from "react";
+import { View, Text, StyleSheet, Alert } from "react-native";
+import { StackScreenProps } from "@react-navigation/stack";
+import { RootStackParamList } from "../types/navigation"; // Đường dẫn đến nơi bạn định nghĩa RootStackParamList
+import UserInfoView from "../components/UserInfoView "; 
+import Avatar from '../assets/avatar.png'; 
 
-type HomeScreenProps = StackScreenProps<RootStackParamList, 'Home'>;
+type HomeScreenProps = StackScreenProps<RootStackParamList, "Home">;
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
   const { userName } = route.params;
-
-  return (
+  const handleNotificationPress = () => {
+    Alert.alert("Notification", "Notification button pressed!");
+  };
+  return ( 
+    
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome, {userName}!</Text>
+      <UserInfoView
+        avatarUrl= {Avatar}// Link avatar mẫu
+        userName={userName}
+        level="5"
+        onNotificationPress={handleNotificationPress}
+      />
     </View>
   );
 };
@@ -18,12 +28,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: 'bold',
   },
 });
 
