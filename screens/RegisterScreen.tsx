@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'; 
 import { RootStackParamList } from '../types/navigation'; // Import RootStackParamList
 import ImageTest from '../assets/logo.png'; // Adjust the path as needed
+import colors from '../constants/colors';
 
 type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Register'>; // Define navigation type
 
@@ -15,12 +16,6 @@ const RegisterScreen: React.FC = () => {
   const navigation = useNavigation<RegisterScreenNavigationProp>(); // Declare navigation type
 
   const handleRegister = async () => {
-    // Validate input
-    if (!name || !email || !password) {
-      Alert.alert('Error', 'Please fill in all fields!');
-      return;
-    }
-
     try {
       // Send request to server
       const response = await fetch('http://192.168.1.11:5002/register', {
@@ -38,7 +33,6 @@ const RegisterScreen: React.FC = () => {
           { text: 'OK', onPress: () => navigation.navigate('Login') }
         ]);
       } else {
-        // Server error
         Alert.alert('Error', data.message || 'Registration failed');
       }
     } catch (error) {
@@ -49,7 +43,8 @@ const RegisterScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={ImageTest} style={styles.logo} /> {/* Logo */}
+      <Image source={ImageTest} style={styles.logo} />   
+      <Text style={styles.healthmateText}>Register for a Healthmate account</Text>
       <TextInput
         style={styles.input}
         placeholder="Name"
@@ -90,42 +85,48 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
-    alignItems: 'center', // Center items horizontally
+    alignItems: 'center', 
+  }, 
+  healthmateText: {
+    fontSize: 13, 
+    marginBottom: 20, 
+    textAlign: 'center',
+    color: colors.text, 
+    fontStyle: 'italic',
   },
   logo: {
-    width: 80, // Set logo width to 80
-    height: 80, // Set logo height to 80
-    marginBottom: 20, // Add spacing below the logo
+    width: 120, 
+    height: 120, 
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.border,
     padding: 10,
     marginBottom: 15,
     borderRadius: 5,
-    width: '100%', // Make inputs full width
+    width: '100%', 
   },
   button: {
-    backgroundColor: '#8B0000', // Dark red color
+    backgroundColor: colors.primary, 
     padding: 15,
     borderRadius: 5,
-    width: '100%', // Full width
-    alignItems: 'center', // Center text inside button
+    width: '100%', 
+    alignItems: 'center', 
   },
   buttonText: {
-    color: '#fff', // White text color
+    color: colors.white, 
     fontWeight: 'bold',
   },
   loginContainer: {
-    marginTop: 20, // Spacing above the login text
+    marginTop: 20, 
   },
   loginText: {
-    color: '#000', // Text color for the login prompt
-    textAlign: 'center', // Center the text
+    color: colors.text, 
+    textAlign: 'center', 
   },
   linkText: {
-    color: '#1E90FF', // Link color (Dodger Blue)
-    fontWeight: 'bold', // Make it bold to stand out
+    color: colors.link,
+    fontWeight: 'bold', 
   },
 });
 

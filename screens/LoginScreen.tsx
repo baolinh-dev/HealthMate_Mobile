@@ -11,7 +11,8 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../types/navigation"; // Import RootStackParamList 
-import ImageTest from '../assets/logo.png';
+import ImageTest from '../assets/logo.png'; 
+import colors from '../constants/colors'; 
 
 type LoginScreenProps = StackScreenProps<RootStackParamList, "Login">; // Define props type
 
@@ -20,11 +21,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please enter email and password!");
-      return;
-    }
-
     try {
       const response = await fetch("http://192.168.1.11:5002/login", {
         method: "POST",
@@ -50,7 +46,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={ImageTest} style={styles.logo} />
+      <Image source={ImageTest} style={styles.logo} /> 
+      <Text style={styles.healthmateText}>Log in with your HealthMate account</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -85,42 +82,48 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: "center",
-    alignItems: "center", // Center items horizontally
+    alignItems: "center", 
+  }, 
+  healthmateText: {
+    fontSize: 13, 
+    marginBottom: 20, 
+    textAlign: 'center', 
+    color: colors.text,  
+    fontStyle: 'italic',
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: colors.border,
     padding: 10,
     marginBottom: 15,
     borderRadius: 5,
-    width: '100%', // Make inputs full width
+    width: '100%', 
   },
   logo: {
-    width: 80, // Set logo width to 80
-    height: 80, // Set logo height to 80
-    marginBottom: 20, // Add spacing below the logo
+    width: 120, 
+    height: 120,
   },
   button: {
-    backgroundColor: '#8B0000', // Dark red color
+    backgroundColor: colors.primary, 
     padding: 15,
     borderRadius: 5,
-    width: '100%', // Full width
-    alignItems: 'center', // Center text inside button
+    width: '100%',
+    alignItems: 'center', 
   },
   buttonText: {
-    color: '#fff', // White text color
+    color: colors.white,
     fontWeight: 'bold',
   },
   registerContainer: {
-    marginTop: 20, // Spacing above the register text
+    marginTop: 20,
   },
   registerText: {
-    color: '#000', // Default text color for the prompt
-    textAlign: 'center', // Center the text
+    color: colors.text, 
+    textAlign: 'center', 
   },
   linkText: {
-    color: '#1E90FF', // Link color (Dodger Blue)
-    fontWeight: 'bold', // Make it bold to stand out
+    color: colors.link, 
+    fontWeight: 'bold', 
   },
 });
 
