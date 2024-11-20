@@ -39,8 +39,9 @@ const UserInfoView: React.FC<UserInfoViewProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
+  container: { 
+    height: 100,
+    width: "100%", 
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -52,7 +53,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    marginBottom: 15,
+    marginBottom: 15, 
+    marginTop: 20, 
   },
   leftContainer: {
     flexDirection: "row",

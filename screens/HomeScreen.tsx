@@ -23,11 +23,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
       />
     </View>
   );
-};
+}; 
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1, // Chiếm toàn bộ chiều cao
+    justifyContent: 'flex-start', // Dính lên trên
+    backgroundColor: 'white', // Hoặc màu nền bạn muốn
   },
 });
 
