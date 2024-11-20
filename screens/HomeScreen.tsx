@@ -1,13 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { StackScreenProps } from '@react-navigation/stack';
+import { RootStackParamList } from '../types/navigation'; // Đường dẫn đến nơi bạn định nghĩa RootStackParamList
 
-export default function HomeScreen() {
+type HomeScreenProps = StackScreenProps<RootStackParamList, 'Home'>;
+
+const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
+  const { userName } = route.params;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Welcome to the Home Screen!</Text>
+      <Text style={styles.welcomeText}>Welcome, {userName}!</Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -15,8 +21,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: {
+  welcomeText: {
     fontSize: 24,
     fontWeight: 'bold',
   },
 });
+
+export default HomeScreen;

@@ -12,7 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../types/navigation"; // Import RootStackParamList 
 import ImageTest from '../assets/logo.png'; 
-import colors from '../constants/colors'; 
+import colors from '../constants/colors';
 
 type LoginScreenProps = StackScreenProps<RootStackParamList, "Login">; // Define props type
 
@@ -33,8 +33,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       const data = await response.json();
 
       if (response.ok) {
-        await AsyncStorage.setItem("token", data.token);
-        navigation.navigate("Home"); // Navigate to Home
+        await AsyncStorage.setItem("token", data.token); 
+        navigation.navigate('Home', { userName: data.user.name });
       } else {
         Alert.alert("Error", data.message || "Login failed");
       }
