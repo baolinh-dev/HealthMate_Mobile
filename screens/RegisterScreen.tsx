@@ -4,7 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'; 
 import { RootStackParamList } from '../types/navigation'; // Import RootStackParamList
 import Logo from '../assets/logo.png'; 
-import colors from '../constants/colors';
+import colors from '../constants/colors'; 
+import { API_BASE_URL } from '../constants/api';
 
 type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Register'>; // Define navigation type
 
@@ -18,7 +19,7 @@ const RegisterScreen: React.FC = () => {
   const handleRegister = async () => {
     try {
       // Send request to server
-      const response = await fetch('http://192.168.1.11:5002/register', {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

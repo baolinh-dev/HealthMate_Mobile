@@ -12,17 +12,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../types/navigation"; // Import RootStackParamList 
 import Logo from '../assets/logo.png'; 
-import colors from '../constants/colors';
+import colors from '../constants/colors'; 
+import { API_BASE_URL } from '../constants/api'; 
 
 type LoginScreenProps = StackScreenProps<RootStackParamList, "Login">; // Define props type
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://192.168.1.11:5002/login", {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
