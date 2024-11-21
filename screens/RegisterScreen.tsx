@@ -19,7 +19,7 @@ const RegisterScreen: React.FC = () => {
   const handleRegister = async () => {
     try {
       // Send request to server
-      const response = await fetch(`${API_BASE_URL}/login`, {
+      const response = await fetch(`${API_BASE_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

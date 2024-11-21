@@ -29,12 +29,16 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
-        await AsyncStorage.setItem("token", data.token);  
-        navigation.navigate("Main", { userName: data.user.name });
+        if (data.user.role === "admin") {
+          Alert.alert("Error", "Admin users are not allowed to log in here.");
+        } else {
+          await AsyncStorage.setItem("token", data.token);  
+          navigation.navigate("Main", { userName: data.user.name });
+        }
       } else {
         Alert.alert("Error", data.message || "Login failed");
       }
@@ -43,6 +47,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       Alert.alert("Error", "Unable to connect to the server.");
     }
   };
+  
 
   return (
     <View style={styles.container}>
