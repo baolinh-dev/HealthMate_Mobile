@@ -1,13 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import { StackScreenProps } from "@react-navigation/stack";
-import { RootStackParamList } from "../types/navigation"; // Đường dẫn đến nơi bạn định nghĩa RootStackParamList
-import UserInfoView from "../components/UserInfoView"; 
-import Avatar from '../assets/avatar.png'; 
+import { MainTabParamList } from "../../types/navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
-import colors from "../constants/colors";
+import UserInfoView from "../../components/UserInfoView";
+import Avatar from '../../assets/avatar.png'; 
+import colors from "../../constants/colors";
 
-type HomeScreenProps = StackScreenProps<RootStackParamList, "Home">;
+type HomeScreenProps = StackScreenProps<MainTabParamList, "Home">;
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
   const { userName } = route.params;
@@ -24,7 +24,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
       />
     </SafeAreaView>
   );
-}; 
+};
 
 const styles = StyleSheet.create({
   container: {

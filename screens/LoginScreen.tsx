@@ -33,8 +33,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       const data = await response.json();
 
       if (response.ok) {
-        await AsyncStorage.setItem("token", data.token); 
-        navigation.navigate('Home', { userName: data.user.name });
+        await AsyncStorage.setItem("token", data.token);  
+        navigation.navigate("Main", { userName: data.user.name });
       } else {
         Alert.alert("Error", data.message || "Login failed");
       }
