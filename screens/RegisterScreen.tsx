@@ -16,10 +16,11 @@ const RegisterScreen: React.FC = () => {
   
   const navigation = useNavigation<RegisterScreenNavigationProp>(); // Declare navigation type
 
-  const handleRegister = async () => {
+  const handleRegister = async () => { 
+    console.log('Starting registration:', { name, email, password });
     try {
       // Send request to server
-      const response = await fetch(`${API_BASE_URL}/register`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
