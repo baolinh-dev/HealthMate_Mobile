@@ -4,6 +4,7 @@ import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { WorkoutStackParamList } from "../types/navigation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AnimatedCircularProgress } from "react-native-circular-progress";
 
 type RestScreenRouteProp = RouteProp<WorkoutStackParamList, "Rest">;
 type RestScreenNavigationProp = StackNavigationProp<
@@ -17,11 +18,10 @@ type Props = {
 };
 
 const RestScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { exercise, restTime, currentSet } = route.params; // Nhận currentSet từ params
+  const { exercise, restTime, currentSet } = route.params;
   const [timeRemaining, setTimeRemaining] = useState(restTime);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  // Lấy email từ AsyncStorage khi component mount
   useEffect(() => {
     const fetchEmail = async () => {
       const email = await AsyncStorage.getItem("email");
@@ -40,7 +40,7 @@ const RestScreen: React.FC<Props> = ({ route, navigation }) => {
       }, 1000);
     } else {
       clearInterval(timer);
-      goToTrainScreen(); // Quay lại TrainScreen khi hết thời gian nghỉ
+      goToTrainScreen();
     }
 
     return () => {
@@ -59,7 +59,7 @@ const RestScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleSkipRest = () => {
-    setTimeRemaining(0); // Bỏ qua thời gian nghỉ và đi tiếp
+    setTimeRemaining(0);
     goToTrainScreen();
   };
 
@@ -71,12 +71,31 @@ const RestScreen: React.FC<Props> = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{exercise.name} - Rest</Text>
-      <Text style={styles.timer}>{formatTime(timeRemaining)}</Text>
-      <Text style={styles.setCount}>
-        Set: {currentSet}/{exercise.sets}
-      </Text>
-      <Button title="Skip Rest" onPress={handleSkipRest} color="blue" />
+      <View style={styles.content}>
+        <Text style={styles.title}>{exercise.name} - Rest</Text>
+
+        {/* Circular Progress */}
+        <AnimatedCircularProgress
+          size={360}
+          width={20}
+          fill={(timeRemaining / restTime) * 100} // Percentage completed
+          tintColor="#FFCDD2" // Active progress color
+          backgroundColor="#3d5875" // Background color
+          rotation={0} // Prevent rotation animation
+        >
+          {() => <Text style={styles.timer}>{formatTime(timeRemaining)}</Text>}
+        </AnimatedCircularProgress>
+        <Text style={styles.setCount}>
+          Set: {currentSet}/{exercise.sets}
+        </Text>
+      </View>
+
+      {/* Skip Rest Button */}
+      <View style={styles.buttonContainer}>
+        <View style={styles.skipButtonWrapper}>
+          <Button title="Skip Rest" onPress={handleSkipRest} color="#fff" />
+        </View>
+      </View>
     </View>
   );
 };
@@ -84,9 +103,13 @@ const RestScreen: React.FC<Props> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "space-between", // Space between content and button
+    padding: 20,
+  },
+  content: {
+    flexGrow: 1, // Allow content to take available space
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
   },
   title: {
     fontSize: 24,
@@ -94,11 +117,23 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   timer: {
-    fontSize: 48,
-    marginBottom: 30,
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#333",
   },
   setCount: {
     fontSize: 18,
+    marginTop: 20,
+  },
+  buttonContainer: {
+    marginBottom: 20, // Optional: 
+    alignItems: "center", 
+  }, 
+  skipButtonWrapper: {
+    backgroundColor: "#4CAF50", // Orange background for Skip Rest
+    borderRadius: 8, // Rounded corners
+    overflow: "hidden", // Ensure button stays inside rounded border
+    width: "60%", // Optional: Adjust width
   },
 });
 

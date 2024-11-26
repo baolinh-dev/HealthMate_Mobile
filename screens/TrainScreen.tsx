@@ -3,8 +3,9 @@ import { View, Text, Button, StyleSheet, Alert } from "react-native";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { WorkoutStackParamList } from "../types/navigation";
-import { completeWorkout } from "../apis/exerciseApi"; // Import hàm completeWorkout từ exerciseApi.ts
+import { completeWorkout } from "../apis/exerciseApi";
 import { Exercise } from "../types/exercise";
+import { AnimatedCircularProgress } from "react-native-circular-progress";
 
 type TrainScreenRouteProp = RouteProp<WorkoutStackParamList, "Train">;
 type TrainScreenNavigationProp = StackNavigationProp<
@@ -18,12 +19,12 @@ type Props = {
 };
 
 const TrainScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { exercise, currentSet: initialSet, email } = route.params; // Get email from params
-  const [timeRemaining, setTimeRemaining] = useState(exercise.timePerSet * 60); // Time remaining in seconds
-  const [isActive, setIsActive] = useState(false); // Timer active status
-  const [currentSet, setCurrentSet] = useState(initialSet || 1); // Track current set
+  const { exercise, currentSet: initialSet, email } = route.params;
+  const [timeRemaining, setTimeRemaining] = useState(exercise.timePerSet * 60);
+  const [isActive, setIsActive] = useState(false);
+  const [currentSet, setCurrentSet] = useState(initialSet || 1);
+  const totalTime = exercise.timePerSet * 60;
 
-  // Countdown timer logic
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
 
@@ -42,30 +43,24 @@ const TrainScreen: React.FC<Props> = ({ route, navigation }) => {
   }, [isActive, timeRemaining]);
 
   const handleStartTimer = () => {
-    setIsActive(true); // Start the countdown timer
+    setIsActive(true);
   };
 
   const handleCompleteSet = async () => {
     setIsActive(false);
 
     try {
-      // Call completeWorkout regardless of whether it's the last set
-      const response = await completeWorkout(
-        email,
-        exercise as Exercise,
-        currentSet
-      );
+      const response = await completeWorkout(email, exercise as Exercise, currentSet);
 
       if (currentSet >= exercise.sets) {
         Alert.alert("Workout Complete!", "You have finished all sets!");
-        navigation.navigate("WorkoutList"); // Navigate after all sets are completed
+        navigation.navigate("WorkoutList");
       } else {
-        // Increment set and navigate to RestScreen if not the last set
         setCurrentSet((prevSet) => prevSet + 1);
         navigation.navigate("Rest", {
           exercise,
-          restTime: exercise.restTimePerSet * 60, // Rest time (seconds)
-          currentSet: currentSet + 1, // Pass the next set number
+          restTime: exercise.restTimePerSet * 60,
+          currentSet: currentSet + 1,
         });
       }
     } catch (error) {
@@ -75,8 +70,8 @@ const TrainScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const handleStopTraining = () => {
     setIsActive(false);
-    setTimeRemaining(exercise.timePerSet * 60); // Reset timer
-    navigation.goBack(); // Go back to the previous screen
+    setTimeRemaining(totalTime);
+    navigation.navigate("WorkoutList");
   };
 
   const formatTime = (timeInSeconds: number) => {
@@ -87,25 +82,41 @@ const TrainScreen: React.FC<Props> = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{exercise.name}</Text>
-      <Text style={styles.setCount}>
-        Set: {currentSet}/{exercise.sets}
-      </Text>
-      <Text style={styles.timer}>{formatTime(timeRemaining)}</Text>
-      {!isActive && (
-        <Button title="Start Timer" onPress={handleStartTimer} />
-      )}{" "}
-      {/* Start Timer button */}
-      {isActive && (
-        <Button title="Complete Set" onPress={handleCompleteSet} />
-      )}{" "}
-      {/* Complete Set button */}
-      <Button
-        title="Stop Training"
-        onPress={handleStopTraining}
-        color="red"
-      />{" "}
-      {/* Stop button */}
+      <View style={styles.content}>
+        <Text style={styles.title}>{exercise.name}</Text>
+        <Text style={styles.setCount}>
+          Set: {currentSet}/{exercise.sets}
+        </Text>
+
+        <AnimatedCircularProgress
+          size={360}
+          width={20}
+          fill={(timeRemaining / totalTime) * 100}
+          tintColor="#4CAF50"
+          backgroundColor="#3d5875"
+          rotation={0}
+        >
+          {() => (
+            <Text style={styles.timer}>{formatTime(timeRemaining)}</Text>
+          )}
+        </AnimatedCircularProgress>
+      </View>
+
+      <View style={styles.buttonContainer}>
+        {!isActive && (
+          <View style={[styles.buttonWrapper, styles.startButton]}>
+            <Button title="Start Timer" onPress={handleStartTimer} color="#ffffff" />
+          </View>
+        )}
+        {isActive && (
+          <View style={[styles.buttonWrapper, styles.completeButton]}>
+            <Button title="Complete Set" onPress={handleCompleteSet} color="#ffffff" />
+          </View>
+        )}
+        <View style={[styles.buttonWrapper, styles.stopButton]}>
+          <Button title="Stop Training" onPress={handleStopTraining} color="#ffffff" />
+        </View>
+      </View>
     </View>
   );
 };
@@ -113,9 +124,13 @@ const TrainScreen: React.FC<Props> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "space-between", // Use space-between to position content and buttons
+    padding: 20,
+  },
+  content: {
+    flexGrow: 1, // Allow content to grow and take available space
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
   },
   title: {
     fontSize: 24,
@@ -127,8 +142,29 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   timer: {
-    fontSize: 48,
-    marginBottom: 30,
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  buttonWrapper: {
+    flex: 1,
+    marginHorizontal: 5,
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  startButton: {
+    backgroundColor: "#4CAF50",
+  },
+  completeButton: {
+    backgroundColor: "#FFC107",
+  },
+  stopButton: {
+    backgroundColor: "#F44336",
   },
 });
 
