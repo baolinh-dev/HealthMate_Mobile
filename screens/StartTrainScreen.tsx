@@ -2,11 +2,12 @@ import React from "react";
 import { View, Text, Button, StyleSheet, Image } from "react-native";
 
 const StartTrainScreen: React.FC<{ route: any; navigation: any }> = ({ route, navigation }) => {
-  const { exercise } = route.params; // Get exercise from params
-
+  const { exercise, email } = route.params; // Get exercise and email from params
+    console.log("email", email);
+    
   const startTraining = () => {
-    // Navigate to the TrainScreen and pass the exercise data
-    navigation.navigate("Train", { exercise });
+    // Navigate to the TrainScreen and pass both exercise and email
+    navigation.navigate("Train", { exercise, email });
   };
 
   return (

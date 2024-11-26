@@ -1,11 +1,5 @@
 import { Exercise } from "./exercise";
-// export interface Exercise {
-//   name: string;
-//   exerciseImage: string;
-//   sets: number;
-//   timePerSet: number;
-//   restTimePerSet: number;
-// }
+
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
@@ -25,7 +19,7 @@ export type MainTabParamList = {
 export type WorkoutStackParamList = {
   WorkoutList: undefined; 
   StartTrain: { exercise: Exercise }; 
-  Train: { exercise: Exercise; currentSet: number }; 
+  Train: { exercise: Exercise; currentSet: number, email: string; }; 
   Rest: { exercise: Exercise; restTime: number; currentSet: number }; 
 };
 

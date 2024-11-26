@@ -1,33 +1,38 @@
-// screens/WorkoutListScreen.tsx
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, SafeAreaView, TouchableOpacity } from 'react-native';
-import { fetchExercises, Exercise } from '../apis/exerciseApi'; // Import the fetch function and Exercise type
+import { fetchExercises } from '../apis/exerciseApi'; // Import the fetch function and Exercise type
+import { Exercise } from '../types/exercise';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const WorkoutListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const [email, setEmail] = useState<string | null>(null); // State to store the email
   const [exercises, setExercises] = useState<Exercise[]>([]); // State to store the list of exercises
   const [loading, setLoading] = useState<boolean>(true); // State to handle loading
 
-  // Fetch exercises when the component mounts
+  // Fetch email from AsyncStorage and exercises when the component mounts
   useEffect(() => {
-    const loadExercises = async () => {
+    const loadData = async () => {
       try {
-        const data = await fetchExercises(); // Fetch data using the fetchExercises function
-        setExercises(data); // Update the exercises state with fetched data
+        const storedEmail = await AsyncStorage.getItem('email'); // Get email from AsyncStorage
+        setEmail(storedEmail); // Update state with the email
+
+        const data = await fetchExercises(); // Fetch exercises
+        setExercises(data); // Update exercises state with fetched data
       } catch (error) {
-        console.error('Error loading exercises:', error); // Log errors if any
+        console.error('Error loading data:', error); // Log errors if any
       } finally {
         setLoading(false); // Set loading to false after data is fetched
       }
     };
 
-    loadExercises(); // Call the function to load exercises
+    loadData(); // Call the function to load email and exercises
   }, []); // Empty dependency array so this runs only once when the component mounts
 
   // Render each exercise item
   const renderExercise = ({ item }: { item: Exercise }) => (
     <TouchableOpacity
       style={styles.exerciseCard}
-      onPress={() => navigation.navigate('StartTrain', { exercise: item })} 
+      onPress={() => navigation.navigate('StartTrain', { exercise: item, email: email })} // Pass email along with exercise
     >
       <Image
         source={{
@@ -37,6 +42,7 @@ const WorkoutListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       />
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
+        <Text style={styles.name}>{item.caloriesPerSet}</Text>
         <Text style={styles.details}>
           Sets: {item.sets}, Time/Set: {item.timePerSet} mins, Rest: {item.restTimePerSet} mins
         </Text>
@@ -85,8 +91,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 15,
     padding: 20,
-    elevation: 3, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
+    elevation: 3, 
+    shadowColor: '#000', 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,

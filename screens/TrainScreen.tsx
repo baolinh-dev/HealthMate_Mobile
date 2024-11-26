@@ -3,9 +3,14 @@ import { View, Text, Button, StyleSheet, Alert } from "react-native";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { WorkoutStackParamList } from "../types/navigation";
+import { completeWorkout } from "../apis/exerciseApi"; // Import hàm completeWorkout từ exerciseApi.ts
+import { Exercise } from "../types/exercise";
 
 type TrainScreenRouteProp = RouteProp<WorkoutStackParamList, "Train">;
-type TrainScreenNavigationProp = StackNavigationProp<WorkoutStackParamList, "Train">;
+type TrainScreenNavigationProp = StackNavigationProp<
+  WorkoutStackParamList,
+  "Train"
+>;
 
 type Props = {
   route: TrainScreenRouteProp;
@@ -13,10 +18,10 @@ type Props = {
 };
 
 const TrainScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { exercise, currentSet: initialSet } = route.params; // Lấy currentSet từ params (bắt đầu từ set đầu tiên)
-  const [timeRemaining, setTimeRemaining] = useState(exercise.timePerSet * 60); // Thời gian còn lại (giây)
-  const [isActive, setIsActive] = useState(false); // Trạng thái đếm ngược
-  const [currentSet, setCurrentSet] = useState(initialSet || 1); // Theo dõi set hiện tại
+  const { exercise, currentSet: initialSet, email } = route.params; // Get email from params
+  const [timeRemaining, setTimeRemaining] = useState(exercise.timePerSet * 60); // Time remaining in seconds
+  const [isActive, setIsActive] = useState(false); // Timer active status
+  const [currentSet, setCurrentSet] = useState(initialSet || 1); // Track current set
 
   // Countdown timer logic
   useEffect(() => {
@@ -37,29 +42,41 @@ const TrainScreen: React.FC<Props> = ({ route, navigation }) => {
   }, [isActive, timeRemaining]);
 
   const handleStartTimer = () => {
-    setIsActive(true); // Bắt đầu đếm ngược
+    setIsActive(true); // Start the countdown timer
   };
 
-  const handleCompleteSet = () => {
-    if (currentSet >= exercise.sets) {
-      Alert.alert("Workout Complete!", "You have finished all sets!");
-      navigation.navigate("WorkoutList")
-      return;
-    }
-
-    // Chuyển sang RestScreen sau khi hoàn thành 1 set
+  const handleCompleteSet = async () => {
     setIsActive(false);
-    navigation.navigate("Rest", {
-      exercise,
-      restTime: exercise.restTimePerSet * 60, // Rest time (giây)
-      currentSet,
-    });
+
+    try {
+      // Call completeWorkout regardless of whether it's the last set
+      const response = await completeWorkout(
+        email,
+        exercise as Exercise,
+        currentSet
+      );
+
+      if (currentSet >= exercise.sets) {
+        Alert.alert("Workout Complete!", "You have finished all sets!");
+        navigation.navigate("WorkoutList"); // Navigate after all sets are completed
+      } else {
+        // Increment set and navigate to RestScreen if not the last set
+        setCurrentSet((prevSet) => prevSet + 1);
+        navigation.navigate("Rest", {
+          exercise,
+          restTime: exercise.restTimePerSet * 60, // Rest time (seconds)
+          currentSet: currentSet + 1, // Pass the next set number
+        });
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to complete the workout");
+    }
   };
 
   const handleStopTraining = () => {
     setIsActive(false);
     setTimeRemaining(exercise.timePerSet * 60); // Reset timer
-    navigation.goBack(); // Quay lại màn hình trước đó
+    navigation.goBack(); // Go back to the previous screen
   };
 
   const formatTime = (timeInSeconds: number) => {
@@ -71,11 +88,24 @@ const TrainScreen: React.FC<Props> = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{exercise.name}</Text>
-      <Text style={styles.setCount}>Set: {currentSet}/{exercise.sets}</Text>
+      <Text style={styles.setCount}>
+        Set: {currentSet}/{exercise.sets}
+      </Text>
       <Text style={styles.timer}>{formatTime(timeRemaining)}</Text>
-      {!isActive && <Button title="Start Timer" onPress={handleStartTimer} />} {/* Nút Start Timer */}
-      {isActive && <Button title="Complete Set" onPress={handleCompleteSet} />}
-      <Button title="Stop Training" onPress={handleStopTraining} color="red" />
+      {!isActive && (
+        <Button title="Start Timer" onPress={handleStartTimer} />
+      )}{" "}
+      {/* Start Timer button */}
+      {isActive && (
+        <Button title="Complete Set" onPress={handleCompleteSet} />
+      )}{" "}
+      {/* Complete Set button */}
+      <Button
+        title="Stop Training"
+        onPress={handleStopTraining}
+        color="red"
+      />{" "}
+      {/* Stop button */}
     </View>
   );
 };

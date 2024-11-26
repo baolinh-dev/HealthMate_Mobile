@@ -36,7 +36,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         if (data.user.role === "admin") {
           Alert.alert("Error", "Admin users are not allowed to log in here.");
         } else {
-          await AsyncStorage.setItem("token", data.token);  
+          await AsyncStorage.setItem("token", data.token);   
+          await AsyncStorage.setItem("email", email);
           navigation.navigate("Main", { userName: data.user.name });
         }
       } else {

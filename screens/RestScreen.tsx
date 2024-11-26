@@ -3,9 +3,13 @@ import { View, Text, StyleSheet, Button } from "react-native";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { WorkoutStackParamList } from "../types/navigation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type RestScreenRouteProp = RouteProp<WorkoutStackParamList, "Rest">;
-type RestScreenNavigationProp = StackNavigationProp<WorkoutStackParamList, "Rest">;
+type RestScreenNavigationProp = StackNavigationProp<
+  WorkoutStackParamList,
+  "Rest"
+>;
 
 type Props = {
   route: RestScreenRouteProp;
@@ -15,6 +19,17 @@ type Props = {
 const RestScreen: React.FC<Props> = ({ route, navigation }) => {
   const { exercise, restTime, currentSet } = route.params; // Nhận currentSet từ params
   const [timeRemaining, setTimeRemaining] = useState(restTime);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  // Lấy email từ AsyncStorage khi component mount
+  useEffect(() => {
+    const fetchEmail = async () => {
+      const email = await AsyncStorage.getItem("email");
+      setUserEmail(email);
+    };
+
+    fetchEmail();
+  }, []);
 
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
@@ -34,10 +49,13 @@ const RestScreen: React.FC<Props> = ({ route, navigation }) => {
   }, [timeRemaining]);
 
   const goToTrainScreen = () => {
-    navigation.navigate("Train", {
-      exercise,
-      currentSet: currentSet + 1, // Tăng set hiện tại
-    });
+    if (userEmail) {
+      navigation.navigate("Train", {
+        exercise,
+        currentSet: currentSet,
+        email: userEmail,
+      });
+    }
   };
 
   const handleSkipRest = () => {
@@ -55,7 +73,9 @@ const RestScreen: React.FC<Props> = ({ route, navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>{exercise.name} - Rest</Text>
       <Text style={styles.timer}>{formatTime(timeRemaining)}</Text>
-      <Text style={styles.setCount}>Set: {currentSet}/{exercise.sets}</Text>
+      <Text style={styles.setCount}>
+        Set: {currentSet}/{exercise.sets}
+      </Text>
       <Button title="Skip Rest" onPress={handleSkipRest} color="blue" />
     </View>
   );
