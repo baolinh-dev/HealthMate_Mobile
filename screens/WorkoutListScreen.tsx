@@ -42,7 +42,6 @@ const WorkoutListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       />
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.name}>{item.caloriesPerSet}</Text>
         <Text style={styles.details}>
           Sets: {item.sets}, Time/Set: {item.timePerSet} mins, Rest: {item.restTimePerSet} mins
         </Text>
