@@ -3,21 +3,21 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StackScreenProps } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons"; // Import Icon library
 import { MainTabParamList } from "../types/navigation"; // Import kiểu cho Bottom Tab Navigation
-import HomeScreen from "./tabs/HomeScreen";
-import BlogScreen from "./tabs/BlogScreen";
+import HomeScreen from "../screens/tabs/HomeScreen";
+import BlogScreen from "../screens/tabs/BlogScreen";
 
-import ProfileScreen from "./tabs/ProfileScreen";
-import WorkoutScreen from "./tabs/WorkoutScreen";
+import ProfileScreen from "../screens/tabs/ProfileScreen";
+import WorkoutStack from "../navigation/WorkoutStack";
 import { RootStackParamList } from "../types/navigation"; // Import kiểu của RootStackParamList
 import colors from "../constants/colors"; // Import colors
-import RecordsScreen from "./tabs/RecordsScreen";
+import RecordsScreen from "../screens/tabs/RecordsScreen";
 
 // Sử dụng StackScreenProps để nhận các prop của màn hình Main
-type MainScreenProps = StackScreenProps<RootStackParamList, "Main">;
+type MainStackProps = StackScreenProps<RootStackParamList, "Main">;
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-const MainScreen: React.FC<MainScreenProps> = ({ route }) => {
+const MainStack: React.FC<MainStackProps> = ({ route }) => {
   const { userName } = route.params; // Nhận userName từ Login
 
   return (
@@ -64,7 +64,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ route }) => {
       />
       <Tab.Screen
         name="Workout"
-        component={WorkoutScreen}
+        component={WorkoutStack}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
@@ -86,4 +86,4 @@ const MainScreen: React.FC<MainScreenProps> = ({ route }) => {
   );
 };
 
-export default MainScreen;
+export default MainStack;

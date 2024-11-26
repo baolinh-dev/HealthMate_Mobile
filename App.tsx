@@ -4,7 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { RootStackParamList } from "./types/navigation"; // Import types
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
-import MainScreen from "./screens/MainScreen";
+import MainScreen from "./navigation/MainStack";
 
 
 const Stack = createStackNavigator<RootStackParamList>();
