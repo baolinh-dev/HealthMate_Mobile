@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { StyleSheet, Alert } from "react-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import { MainTabParamList } from "../../types/navigation";
 import { SafeAreaView } from "react-native-safe-area-context";

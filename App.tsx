@@ -4,7 +4,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { RootStackParamList } from "./types/navigation"; // Import types
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
-import MainScreen from "./navigation/MainStack";
+import MainStack from "./navigation/MainStack";
+
 
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -17,7 +18,7 @@ export default function App() {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen
           name="Main"
-          component={MainScreen}
+          component={MainStack}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

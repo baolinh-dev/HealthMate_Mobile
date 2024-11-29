@@ -3,14 +3,14 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StackScreenProps } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons"; // Import Icon library
 import { MainTabParamList } from "../types/navigation"; // Import kiểu cho Bottom Tab Navigation
-import HomeScreen from "../screens/tabs/HomeScreen";
-import BlogScreen from "../screens/tabs/BlogScreen";
+import HomeScreen from "../screens/main/HomeScreen";
+import BlogScreen from "../screens/main/BlogScreen";
 
-import ProfileScreen from "../screens/tabs/ProfileScreen";
+import ProfileScreen from "../screens/main/ProfileScreen";
 import WorkoutStack from "../navigation/WorkoutStack";
 import { RootStackParamList } from "../types/navigation"; // Import kiểu của RootStackParamList
 import colors from "../constants/colors"; // Import colors
-import RecordsScreen from "../screens/tabs/RecordsScreen";
+import RecordsScreen from "../screens/main/RecordsScreen";
 
 // Sử dụng StackScreenProps để nhận các prop của màn hình Main
 type MainStackProps = StackScreenProps<RootStackParamList, "Main">;
