@@ -12,11 +12,10 @@ import {
   Modal,
   Alert,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { Blog } from "../../types/blog"; 
 import { fetchAllBlogs, addNewBlog } from "../../apis/blogApi";
-import { addComment } from "../../apis/commentApi";
+import { addComment } from "../../apis/commentApi"; 
+import { MaterialIcons } from "@expo/vector-icons";
 
 const BlogScreen = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -152,7 +151,7 @@ const BlogScreen = () => {
         style={styles.fab}
         onPress={openAddBlogForm}
       >
-        <Text style={styles.fabText}>+</Text>
+        <MaterialIcons name="add" size={30} color="#fff" />
       </TouchableOpacity>
 
       {/* Modal for adding new blog */}
