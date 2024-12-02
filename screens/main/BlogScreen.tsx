@@ -12,9 +12,9 @@ import {
   Modal,
   Alert,
 } from "react-native";
-import { Blog } from "../../types/blog"; 
+import { Blog } from "../../types/blog";
 import { fetchAllBlogs, addNewBlog } from "../../apis/blogApi";
-import { addComment } from "../../apis/commentApi"; 
+import { addComment } from "../../apis/commentApi";
 import { MaterialIcons } from "@expo/vector-icons";
 
 const BlogScreen = () => {
@@ -29,7 +29,12 @@ const BlogScreen = () => {
   const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
   const [newComment, setNewComment] = useState<string>("");
   const [comments, setComments] = useState<any[]>([]);
-  
+
+  // State to track visibility of comments
+  const [showComments, setShowComments] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+
   // Fetch all blogs
   const fetchBlogs = async () => {
     try {
@@ -50,7 +55,10 @@ const BlogScreen = () => {
       setNewBlog({ title: "", content: "", image: "" });
       setIsFormVisible(false);
 
-      Alert.alert("Success", "Bạn đã đăng bài thành công. Admin đang trong quá trình duyệt bài của bạn.");
+      Alert.alert(
+        "Success",
+        "Bạn đã đăng bài thành công. Admin đang trong quá trình duyệt bài của bạn."
+      );
     } catch (error) {
       console.error("Error adding blog:", error);
     }
@@ -81,6 +89,14 @@ const BlogScreen = () => {
   // Handle close modal
   const closeAddBlogForm = () => {
     setIsFormVisible(false);
+  };
+
+  // Toggle comments visibility
+  const toggleCommentsVisibility = (blogId: string) => {
+    setShowComments((prev) => ({
+      ...prev,
+      [blogId]: !prev[blogId],
+    }));
   };
 
   useEffect(() => {
@@ -114,18 +130,30 @@ const BlogScreen = () => {
               <Text>Comments: {item.comments.length}</Text>
             </View>
 
-            {/* Hiển thị danh sách bình luận ngay lập tức */}
+            {/* Toggleable comment section */}
             <View style={styles.commentSection}>
-              <FlatList
-                data={item.comments}
-                keyExtractor={(comment) => comment._id}
-                renderItem={({ item }) => (
-                  <View style={styles.commentItem}>
-                    <Text style={styles.commentAuthor}>{item.userName}:</Text>
-                    <Text style={styles.commentContent}>{item.content}</Text>
-                  </View>
-                )}
-              />
+              {showComments[item._id] && (
+                <FlatList
+                  data={item.comments}
+                  keyExtractor={(comment) => comment._id}
+                  renderItem={({ item }) => (
+                    <View style={styles.commentItem}>
+                      <Text style={styles.commentAuthor}>{item.userName}:</Text>
+                      <Text style={styles.commentContent}>{item.content}</Text>
+                    </View>
+                  )}
+                />
+              )}
+              <TouchableOpacity
+                style={styles.toggleCommentsButton}
+                onPress={() => toggleCommentsVisibility(item._id)}
+              >
+                <Text style={styles.toggleCommentsText}>
+                  {showComments[item._id]
+                    ? "Hide comments"
+                    : "See more comments ..."}
+                </Text>
+              </TouchableOpacity>
               <TextInput
                 style={styles.input}
                 placeholder="Nhập bình luận..."
@@ -147,10 +175,7 @@ const BlogScreen = () => {
       />
 
       {/* Floating Action Button */}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={openAddBlogForm}
-      >
+      <TouchableOpacity style={styles.fab} onPress={openAddBlogForm}>
         <MaterialIcons name="add" size={30} color="#fff" />
       </TouchableOpacity>
 
@@ -165,21 +190,21 @@ const BlogScreen = () => {
           <View style={styles.modalContent}>
             <TextInput
               style={styles.input}
-              placeholder="Title" 
+              placeholder="Title"
               placeholderTextColor="#888"
               value={newBlog.title}
               onChangeText={(text) => setNewBlog({ ...newBlog, title: text })}
             />
             <TextInput
               style={styles.input}
-              placeholder="Content" 
+              placeholder="Content"
               placeholderTextColor="#888"
               value={newBlog.content}
               onChangeText={(text) => setNewBlog({ ...newBlog, content: text })}
             />
             <TextInput
               style={styles.input}
-              placeholder="Image URL" 
+              placeholder="Image URL"
               placeholderTextColor="#888"
               value={newBlog.image}
               onChangeText={(text) => setNewBlog({ ...newBlog, image: text })}
@@ -321,6 +346,16 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: "#fff",
+    fontWeight: "bold",
+  },
+  toggleCommentsButton: {
+    padding: 5,
+    borderRadius: 5,
+    alignItems: "center", 
+    marginBottom: 10
+  },
+  toggleCommentsText: {
+    color: "#888",
     fontWeight: "bold",
   },
 });
