@@ -7,6 +7,10 @@ import {
   ActivityIndicator,
   Image,
   SafeAreaView,
+  TextInput,
+  TouchableOpacity,
+  Modal,
+  Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -16,6 +20,12 @@ import { API_BASE_URL } from "../../constants/api";
 const BlogScreen = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
+  const [newBlog, setNewBlog] = useState({
+    title: "",
+    content: "",
+    image: "",
+  });
 
   const fetchBlogs = async () => {
     try {
@@ -35,6 +45,31 @@ const BlogScreen = () => {
       console.error("Error fetching blogs:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddBlog = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) throw new Error("No token found");
+
+      const response = await axios.post(
+        `${API_BASE_URL}/api/blogs/add`,
+        newBlog,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setNewBlog({ title: "", content: "", image: "" });
+      setIsFormVisible(false); 
+
+      Alert.alert(
+        "Success",
+        "Bạn đã đăng bài thành công. Admin đang trong quá trình duyệt bài của bạn.")
+    } catch (error) {
+      console.error("Error adding blog:", error);
     }
   };
 
@@ -58,18 +93,12 @@ const BlogScreen = () => {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={styles.blogPost}>
-            {/* Header với thông tin tác giả */}
-
-              <Text style={styles.author}>Author: {item.authorId?.name}</Text>
-
-
+            <Text style={styles.author}>Author: {item.authorId?.name}</Text>
             {item.image && (
               <Image source={{ uri: item.image }} style={styles.image} />
             )}
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.content}>{item.content}</Text>
-
-            {/* Footer với thông tin lượt like và comment */}
             <View style={styles.footer}>
               <Text>Likes: {item.likes.length}</Text>
               <Text>Comments: {item.comments.length}</Text>
@@ -77,6 +106,57 @@ const BlogScreen = () => {
           </View>
         )}
       />
+
+      {/* Nút Add */}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => setIsFormVisible(true)}
+      >
+        <Text style={styles.addButtonText}>+</Text>
+      </TouchableOpacity>
+
+      {/* Modal Form */}
+      <Modal visible={isFormVisible} animationType="fade" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.form}>
+            <Text style={styles.formTitle}>Post Blog</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Title" 
+               placeholderTextColor="#888"
+              value={newBlog.title}
+              onChangeText={(text) => setNewBlog({ ...newBlog, title: text })}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Content" 
+               placeholderTextColor="#888"
+              multiline
+              value={newBlog.content}
+              onChangeText={(text) => setNewBlog({ ...newBlog, content: text })}
+            />
+            <TextInput 
+              placeholderTextColor="#888"
+              style={styles.input}
+              placeholder="Image URL" 
+               
+              value={newBlog.image}
+              onChangeText={(text) => setNewBlog({ ...newBlog, image: text })}
+            />
+            <View style={styles.formActions}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setIsFormVisible(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.saveButton} onPress={handleAddBlog}>
+                <Text style={styles.saveButtonText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -105,15 +185,11 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 5,
     marginBottom: 10,
-  }, 
-  infor: {
-    display: "flex", 
-    flexDirection: "row"
   },
   author: {
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 10, 
+    marginBottom: 10,
   },
   footer: {
     marginTop: 10,
@@ -124,6 +200,70 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  addButton: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "#007bff",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  addButtonText: {
+    color: "#fff",
+    fontSize: 30,
+    lineHeight: 30,
+    fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  form: {
+    width: "90%",
+    padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+  },
+  formTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc", 
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 15, 
+  },
+  formActions: {
+    flexDirection: "row", 
+    justifyContent: "flex-end"
+  },
+  cancelButton: {
+    backgroundColor: "#dc3545",
+    padding: 10,
+    borderRadius: 5, 
+    marginRight: 12
+  },
+  cancelButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  saveButton: {
+    backgroundColor: "#28a745",
+    padding: 10,
+    borderRadius: 5,
+  },
+  saveButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 
