@@ -74,7 +74,8 @@ const MainStack: React.FC<MainStackProps> = ({ route }) => {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileScreen} 
+        initialParams={{ userName }}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (

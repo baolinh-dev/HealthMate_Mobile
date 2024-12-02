@@ -8,11 +8,11 @@ export type RootStackParamList = {
 };
 
 export type MainTabParamList = {
-  Home: { userName: string }; // Hiển thị tên user trên Home
+  Home: { userName: string }; 
   Blog: undefined;
   Record: undefined;
   Workout: undefined;
-  Profile: undefined;
+  Profile: { userName: string }; 
 };
 
 
