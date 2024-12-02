@@ -4,7 +4,7 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons"; // Import Icon library
 import { MainTabParamList } from "../types/navigation"; // Import kiểu cho Bottom Tab Navigation
 import HomeScreen from "../screens/main/HomeScreen";
-import BlogScreen from "../screens/main/BlogScreen";
+import BlogScreen from "../screens/main/BlogScreen/BlogScreen";
 
 import ProfileScreen from "../screens/main/ProfileScreen";
 import WorkoutStack from "../navigation/WorkoutStack";
