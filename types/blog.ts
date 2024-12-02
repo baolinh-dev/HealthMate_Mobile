@@ -1,31 +1,33 @@
-export interface User {
-    _id: string;
-    name: string;
-    email: string;
-    role: 'admin' | 'user';  // Or any other roles you may have
-  }
-  
+// types/blog.ts
 
-  export interface Blog {
-    _id: string;
-    title: string;
-    content: string;
-    image?: string;
-    authorId: User; // Changed from authorId to author, populated with User data
-    status: 'draft' | 'published' | 'archived';
-    likes: { userId: string }[];
-    comments: { userId: string; content: string; createdAt: string }[];
-    createdAt: string;
-    updatedAt: string;
-  }
-  
-  export interface Like {
-    userId: string; // ID của người dùng đã like (chuỗi)
-  }
-  
-  export interface Comment {
-    userId: string; // ID của người dùng đã bình luận (chuỗi)
-    content: string; // Nội dung bình luận
-    createdAt: string; // Thời gian bình luận (ISO date string)
-  }
-  
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'user'; // Hoặc các role khác mà bạn có
+}
+
+export interface Comment { 
+  _id: string,
+  userId: string; // Thay vì userId là string, hãy tham chiếu User để lấy thông tin người dùng
+  userName: string; // Thay vì userId là string, hãy tham chiếu User để lấy thông tin người dùng
+  content: string;
+  createdAt: string; // Thời gian bình luận (ISO date string)
+}
+
+export interface Blog {
+  _id: string;
+  title: string;
+  content: string;
+  image?: string;
+  authorId: User; // Dữ liệu tác giả được lấy từ User
+  status: 'draft' | 'published' | 'archived';
+  likes: Like[];
+  comments: Comment[]; // Mảng bình luận với kiểu Comment đã được định nghĩa
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Like {
+  userId: string; // ID của người dùng đã like (chuỗi)
+}

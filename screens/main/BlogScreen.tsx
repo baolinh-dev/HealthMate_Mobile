@@ -14,8 +14,9 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { Blog } from "../../types/blog";
-import { API_BASE_URL } from "../../constants/api";
+import { Blog } from "../../types/blog"; 
+import { fetchAllBlogs, addNewBlog } from "../../apis/blogApi";
+import { addComment } from "../../apis/commentApi";
 
 const BlogScreen = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -26,21 +27,16 @@ const BlogScreen = () => {
     content: "",
     image: "",
   });
-
+  const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
+  const [newComment, setNewComment] = useState<string>("");
+  const [comments, setComments] = useState<any[]>([]);
+  
+  // Fetch all blogs
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const token = await AsyncStorage.getItem("token");
-
-      if (!token) throw new Error("No token found");
-
-      const response = await axios.get(`${API_BASE_URL}/api/blogs/all`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setBlogs(response.data.blogs);
+      const fetchedBlogs = await fetchAllBlogs(); // Gọi hàm fetch blogs từ API
+      setBlogs(fetchedBlogs);
     } catch (error) {
       console.error("Error fetching blogs:", error);
     } finally {
@@ -48,33 +44,48 @@ const BlogScreen = () => {
     }
   };
 
+  // Handle adding new blog
   const handleAddBlog = async () => {
     try {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) throw new Error("No token found");
-
-      const response = await axios.post(
-        `${API_BASE_URL}/api/blogs/add`,
-        newBlog,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await addNewBlog(newBlog); // Gọi hàm thêm blog mới
       setNewBlog({ title: "", content: "", image: "" });
-      setIsFormVisible(false); 
+      setIsFormVisible(false);
 
-      Alert.alert(
-        "Success",
-        "Bạn đã đăng bài thành công. Admin đang trong quá trình duyệt bài của bạn.")
+      Alert.alert("Success", "Bạn đã đăng bài thành công. Admin đang trong quá trình duyệt bài của bạn.");
     } catch (error) {
       console.error("Error adding blog:", error);
     }
   };
 
+  // Handle adding a new comment
+  const handleAddComment = async () => {
+    if (!newComment.trim() || !selectedBlogId) {
+      Alert.alert("Error", "Nội dung bình luận không được để trống.");
+      return;
+    }
+
+    try {
+      const response = await addComment(selectedBlogId, newComment);
+      setComments((prev) => [...prev, response.comment]); // Thêm bình luận vào danh sách
+      setNewComment(""); // Reset comment input
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      Alert.alert("Error", "Không thể thêm bình luận.");
+    }
+  };
+
+  // Handle open modal to add blog
+  const openAddBlogForm = () => {
+    setIsFormVisible(true);
+  };
+
+  // Handle close modal
+  const closeAddBlogForm = () => {
+    setIsFormVisible(false);
+  };
+
   useEffect(() => {
-    fetchBlogs();
+    fetchBlogs(); // Fetch blogs when component mounts
   }, []);
 
   if (loading) {
@@ -103,57 +114,86 @@ const BlogScreen = () => {
               <Text>Likes: {item.likes.length}</Text>
               <Text>Comments: {item.comments.length}</Text>
             </View>
+
+            {/* Hiển thị danh sách bình luận ngay lập tức */}
+            <View style={styles.commentSection}>
+              <FlatList
+                data={item.comments}
+                keyExtractor={(comment) => comment._id}
+                renderItem={({ item }) => (
+                  <View style={styles.commentItem}>
+                    <Text style={styles.commentAuthor}>{item.userName}:</Text>
+                    <Text style={styles.commentContent}>{item.content}</Text>
+                  </View>
+                )}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Nhập bình luận..."
+                value={newComment}
+                onChangeText={setNewComment}
+              />
+              <TouchableOpacity
+                style={styles.commentButton}
+                onPress={() => {
+                  setSelectedBlogId(item._id);
+                  handleAddComment();
+                }}
+              >
+                <Text style={styles.commentButtonText}>Post Comment</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       />
 
-      {/* Nút Add */}
+      {/* Floating Action Button */}
       <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => setIsFormVisible(true)}
+        style={styles.fab}
+        onPress={openAddBlogForm}
       >
-        <Text style={styles.addButtonText}>+</Text>
+        <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
 
-      {/* Modal Form */}
-      <Modal visible={isFormVisible} animationType="fade" transparent>
-        <View style={styles.modalContainer}>
-          <View style={styles.form}>
-            <Text style={styles.formTitle}>Post Blog</Text>
+      {/* Modal for adding new blog */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isFormVisible}
+        onRequestClose={closeAddBlogForm}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
             <TextInput
               style={styles.input}
               placeholder="Title" 
-               placeholderTextColor="#888"
+              placeholderTextColor="#888"
               value={newBlog.title}
               onChangeText={(text) => setNewBlog({ ...newBlog, title: text })}
             />
             <TextInput
               style={styles.input}
               placeholder="Content" 
-               placeholderTextColor="#888"
-              multiline
+              placeholderTextColor="#888"
               value={newBlog.content}
               onChangeText={(text) => setNewBlog({ ...newBlog, content: text })}
             />
-            <TextInput 
-              placeholderTextColor="#888"
+            <TextInput
               style={styles.input}
               placeholder="Image URL" 
-               
+              placeholderTextColor="#888"
               value={newBlog.image}
               onChangeText={(text) => setNewBlog({ ...newBlog, image: text })}
             />
-            <View style={styles.formActions}>
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => setIsFormVisible(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.saveButton} onPress={handleAddBlog}>
-                <Text style={styles.saveButtonText}>Save</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity style={styles.saveButton} onPress={handleAddBlog}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={closeAddBlogForm}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -201,69 +241,88 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  addButton: {
+  commentSection: {
+    marginTop: 10,
+  },
+  commentItem: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: "#fff",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  commentAuthor: {
+    fontWeight: "bold",
+  },
+  commentContent: {
+    marginTop: 5,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  commentButton: {
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  commentButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  fab: {
     position: "absolute",
-    bottom: 20,
     right: 20,
-    backgroundColor: "#007bff",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    bottom: 20,
+    backgroundColor: "#007BFF",
+    padding: 15,
+    borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
   },
-  addButtonText: {
+  fabText: {
     color: "#fff",
-    fontSize: 30,
-    lineHeight: 30,
+    fontSize: 24,
     fontWeight: "bold",
   },
-  modalContainer: {
+  modalOverlay: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
-  form: {
-    width: "90%",
-    padding: 20,
+  modalContent: {
+    width: "80%",
     backgroundColor: "#fff",
+    padding: 20,
     borderRadius: 10,
-  },
-  formTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc", 
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15, 
-  },
-  formActions: {
-    flexDirection: "row", 
-    justifyContent: "flex-end"
-  },
-  cancelButton: {
-    backgroundColor: "#dc3545",
-    padding: 10,
-    borderRadius: 5, 
-    marginRight: 12
-  },
-  cancelButtonText: {
-    color: "#fff",
-    fontSize: 16,
   },
   saveButton: {
     backgroundColor: "#28a745",
     padding: 10,
     borderRadius: 5,
+    alignItems: "center",
+    marginTop: 10,
   },
   saveButtonText: {
     color: "#fff",
-    fontSize: 16,
+    fontWeight: "bold",
+  },
+  cancelButton: {
+    backgroundColor: "#dc3545",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  cancelButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 
