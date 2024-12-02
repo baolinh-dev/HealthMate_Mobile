@@ -16,6 +16,7 @@ import { Blog } from "../../types/blog";
 import { fetchAllBlogs, addNewBlog } from "../../apis/blogApi";
 import { addComment } from "../../apis/commentApi";
 import { MaterialIcons } from "@expo/vector-icons";
+import colors from "../../constants/colors";
 
 const BlogScreen = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -119,7 +120,13 @@ const BlogScreen = () => {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={styles.blogPost}>
-            <Text style={styles.author}>Author: {item.authorId?.name}</Text>
+            <View style={styles.infor}>
+              <Text style={styles.author}>Author: {item.author.name}</Text>
+              <Text style={styles.date}>
+                Date: {new Date(item.createdAt).toLocaleDateString("en-US")}
+              </Text>
+            </View>
+
             {item.image && (
               <Image source={{ uri: item.image }} style={styles.image} />
             )}
@@ -185,7 +192,8 @@ const BlogScreen = () => {
         transparent={true}
         visible={isFormVisible}
         onRequestClose={closeAddBlogForm}
-      >
+      > 
+      
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <TextInput
@@ -249,9 +257,19 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 5,
     marginBottom: 10,
+  }, 
+  infor: {
+    display: "flex",  
+    flexDirection: "row",
+    justifyContent: "space-between", 
   },
   author: {
-    fontSize: 16,
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 10,
+  }, 
+  date: {
+    fontSize: 14,
     fontWeight: "bold",
     marginBottom: 10,
   },
@@ -303,7 +321,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 20,
     bottom: 20,
-    backgroundColor: "#007BFF",
+    backgroundColor: colors.primary,
     padding: 15,
     borderRadius: 50,
     justifyContent: "center",
@@ -351,8 +369,8 @@ const styles = StyleSheet.create({
   toggleCommentsButton: {
     padding: 5,
     borderRadius: 5,
-    alignItems: "center", 
-    marginBottom: 10
+    alignItems: "center",
+    marginBottom: 10,
   },
   toggleCommentsText: {
     color: "#888",

@@ -20,7 +20,7 @@ export interface Blog {
   title: string;
   content: string;
   image?: string;
-  authorId: User; // Dữ liệu tác giả được lấy từ User
+  author: User; // Dữ liệu tác giả được lấy từ User
   status: 'draft' | 'published' | 'archived';
   likes: Like[];
   comments: Comment[]; // Mảng bình luận với kiểu Comment đã được định nghĩa
